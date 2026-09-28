@@ -24,7 +24,7 @@ def show_setting():
         with col2:
             st.selectbox(
                 "Date Format",
-                ["DD/MM/YYYY", "MM/DD/YYYY", "YYYY-MM-DD"],
+                ["DD/MM/YYYY"],
                 index=0
             )
 

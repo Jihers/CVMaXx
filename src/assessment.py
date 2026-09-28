@@ -22,6 +22,15 @@ def show_assessment():
             label_visibility="collapsed"
         )
 
+        # Filter patients
+        if search:
+            search = search.lower()
+
+            patients = patients[
+                patients["name"].str.lower().str.contains(search, na=False)
+                | patients["patient_id"].str.lower().str.contains(search, na=False)
+            ]
+
         # Header
         col1, col2, col3, col4, col5 = st.columns(
             [2.5, 0.7, 1, 1.3, 2.4]

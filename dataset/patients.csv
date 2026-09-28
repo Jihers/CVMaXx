@@ -1,0 +1,6 @@
+patient_id,name,age,gender,last_visit,xray_file,stage
+P001,John Smith,14,Male,2026-05-01,P001.jpg,CS2
+P002,Emma Johnson,13,Female,2026-04-28,P002.jpg,CS2
+P003,Michael Brown,15,Male,2026-05-03,P003.jpg,CS4
+P004,Sophia Davis,12,Female,2026-04-25,P004.jpg,CS4
+P005,William Wilson,16,Male,2026-05-05,P005.jpg,CS6

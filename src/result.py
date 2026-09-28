@@ -3,6 +3,49 @@ from datetime import datetime
 
 def show_results(patient, uploaded_xray):
 
+    # Prototype stage data
+    stage = patient["stage"]
+
+    stage_data = {
+        "CS2": {
+            "description": "Acceleration of Growth Begins",
+            "confidence": "91.8%",
+            "interpretation": (
+                "The morphological characteristics of C2, C3, "
+                "and C4 indicate that mandibular growth acceleration "
+                "has begun."
+            ),
+            "concavity": "Moderate / Moderate / Moderate",
+            "shape": "Rectangular Horizontal / Trapezoidal / Trapezoidal",
+        },
+
+        "CS4": {
+            "description": "Peak Growth Passed Recently",
+            "confidence": "92.4%",
+            "interpretation": (
+                "The morphological characteristics of C2, C3, "
+                "and C4 indicate that the peak mandibular growth "
+                "period has recently passed."
+            ),
+            "concavity": "Deep / Moderate / Moderate",
+            "shape": "Trapezoid / Square / Rectangular Horizontal",
+        },
+
+        "CS6": {
+            "description": "Growth Completed",
+            "confidence": "94.1%",
+            "interpretation": (
+                "The morphological characteristics of C2, C3, "
+                "and C4 indicate that mandibular growth has "
+                "essentially been completed."
+            ),
+            "concavity": "Deep / Deep / Deep",
+            "shape": "Rectangular Vertical / Rectangular Vertical / Rectangular Vertical",
+        }
+    }
+
+    current_stage = stage_data.get(stage, stage_data["CS4"])
+
     # ============================================================
     # PAGE STYLING
     # ============================================================
@@ -30,6 +73,17 @@ def show_results(patient, uploaded_xray):
         padding: 18px;
         margin-bottom: 16px;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    }
+
+    .section-card-equal {
+        background: #FFFFFF;
+        border: 1px solid #DCE3EA;
+        border-radius: 12px;
+        padding: 18px;
+        margin-bottom: 16px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        height: 100%;
+        box-sizing: border-box;
     }
 
     .section-title {
@@ -177,6 +231,7 @@ def show_results(patient, uploaded_xray):
     }
 
     .result-header {
+        position: relative;
         background-color: #0D1E35;
         height: 76px;
         padding: 0 24px;
@@ -209,6 +264,22 @@ def show_results(patient, uploaded_xray):
         font-weight: 600;
     }
 
+    .xray-card {
+        background: #FFFFFF;
+        border: 1px solid #DCE3EA;
+        border-radius: 12px;
+        padding: 18px;
+        margin-bottom: 16px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    }
+
+    .xray-center {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+    }
+
     </style>
     """, unsafe_allow_html=True)
 
@@ -216,6 +287,15 @@ def show_results(patient, uploaded_xray):
     # ============================================================
     # HEADER
     # ============================================================
+
+    exit_col = st.columns([27, 1])[1]
+
+    with exit_col:
+        if st.button("Exit", key="close_results"):
+            st.session_state["show_results"] = False
+            st.session_state.pop("selected_patient", None)
+            st.session_state.pop("uploaded_xray", None)
+            st.rerun()
 
     st.markdown(
         f"""
@@ -240,182 +320,119 @@ def show_results(patient, uploaded_xray):
         unsafe_allow_html=True
     )
 
-    if st.button("×", key="close_results"):
-        st.session_state["show_results"] = False
-        st.session_state.pop("selected_patient", None)
-        st.session_state.pop("uploaded_xray", None)
-        st.rerun()
-
     # ============================================================
-    # 1. DETECTED X-RAY
+    # 1 & 2. DETECTED X-RAY + CONCAVITY ANALYSIS
     # ============================================================
 
-    st.markdown("""
-    <div class="section-card">
-        <div class="section-title">
-            Detected Cervical Vertebrae
-        </div>
-    """, unsafe_allow_html=True)
-
-    if uploaded_xray is not None:
-
-        st.image(
-            uploaded_xray,
-            width="stretch"
-        )
-
-    st.markdown("</div>", unsafe_allow_html=True)
-
-
-    # ============================================================
-    # 2. CONCAVITY ANALYSIS
-    # ============================================================
-
-    st.markdown("""
-    <div class="section-card">
-        <div class="section-title">
-            2. Concavity Analysis (C2–C4)
-        </div>
-        <table class="concavity-table">
-            <tr>
-                <th>Vertebra</th>
-                <th>Concavity Depth</th>
-                <th>Concavity Classification</th>
-            </tr>
-            <tr>
-                <td>C2</td>
-                <td>1.8 mm</td>
-                <td class="deep">Deep</td>
-            </tr>
-            <tr>
-                <td>C3</td>
-                <td>1.4 mm</td>
-                <td class="moderate">Moderate</td>
-            </tr>
-            <tr>
-                <td>C4</td>
-                <td>1.2 mm</td>
-                <td class="moderate">Moderate</td>
-            </tr>
-        </table>
-    </div>
-    """, unsafe_allow_html=True)
-
-
-    # ============================================================
-    # 3. VERTEBRAL SHAPE CLASSIFICATION
-    # ============================================================
-
-    st.markdown(
-        '<div class="section-card">'
-        '<div class="section-title">3. Vertebral Shape Classification</div>'
-        '<div style="text-align:center;font-size:14px;font-weight:600;color:#64748B;margin-bottom:16px;">'
-        'Predicted Stage'
-        '</div>'
-        '</div>',
-        unsafe_allow_html=True
-    )
-
-    col1, col2, col3 = st.columns(3)
+    col1, col2 = st.columns(2)
 
     with col1:
-        st.markdown(
-            '<div style="text-align:center;padding:10px;">'
-            '<div style="height:110px;display:flex;align-items:center;justify-content:center;">'
-            '<svg width="95" height="80" viewBox="0 0 120 100">'
-            '<polygon points="20,25 100,25 95,75 25,75" fill="none" stroke="#246BCE" stroke-width="4"/>'
-            '</svg>'
-            '</div>'
-            '<div style="font-size:15px;font-weight:700;color:#334155;">C2</div>'
-            '<div style="font-size:13px;color:#64748B;margin-top:4px;">Rectangular Horizontal</div>'
-            '</div>',
-            unsafe_allow_html=True
-        )
+        st.markdown("""
+        <div class="section-card-equal">
+            <div class="section-title">1. Detected Cervical Vertebrae</div>
+            <div class="xray-container">
+        """, unsafe_allow_html=True)
+
+        xray_col = st.columns([1, 2, 1])[1]
+        with xray_col:
+            st.image(uploaded_xray, width=300)
+
+        st.markdown("""
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
 
     with col2:
-        st.markdown(
-            '<div style="text-align:center;padding:10px;">'
-            '<div style="height:110px;display:flex;align-items:center;justify-content:center;">'
-            '<svg width="95" height="80" viewBox="0 0 120 100">'
-            '<rect x="30" y="20" width="60" height="60" fill="none" stroke="#246BCE" stroke-width="4"/>'
-            '</svg>'
-            '</div>'
-            '<div style="font-size:15px;font-weight:700;color:#334155;">C3</div>'
-            '<div style="font-size:13px;color:#64748B;margin-top:4px;">Square</div>'
-            '</div>',
-            unsafe_allow_html=True
-        )
-
-    with col3:
-        st.markdown(
-            '<div style="text-align:center;padding:10px;">'
-            '<div style="height:110px;display:flex;align-items:center;justify-content:center;">'
-            '<svg width="95" height="80" viewBox="0 0 120 100">'
-            '<polygon points="35,20 85,20 100,80 20,80" fill="none" stroke="#246BCE" stroke-width="4"/>'
-            '</svg>'
-            '</div>'
-            '<div style="font-size:15px;font-weight:700;color:#334155;">C4</div>'
-            '<div style="font-size:13px;color:#64748B;margin-top:4px;">Trapezoidal</div>'
-            '</div>',
-            unsafe_allow_html=True
-        )
-
-    st.markdown(
-        '<div class="section-card">'
-        '<table class="measurement-table">'
-        '<tr><th>Vertebra</th><th>Shape</th><th>Description</th></tr>'
-        '<tr><td>C2</td><td><b>Rectangular Horizontal</b></td><td>Width greater than height</td></tr>'
-        '<tr><td>C3</td><td><b>Square</b></td><td>Height approximately equals width</td></tr>'
-        '<tr><td>C4</td><td><b>Trapezoidal</b></td><td>Posterior height greater than anterior height</td></tr>'
-        '</table>'
-        '</div>',
-        unsafe_allow_html=True
-    )
-
-
-    # ============================================================
-    # 4. MORPHOLOGICAL MEASUREMENTS
-    # ============================================================
-
-    st.markdown("""
-    <div class="section-card">
-        <div class="section-title">
-            4. Morphological Measurements (mm)
+        st.markdown("""
+        <div class="section-card-equal">
+            <div class="section-title">2. Concavity Analysis (C2–C4)</div>
+            <table class="concavity-table">
+                <tr>
+                    <th>Vertebra</th>
+                    <th>Concavity Depth</th>
+                    <th>Concavity Classification</th>
+                </tr>
+                <tr>
+                    <td>C2</td>
+                    <td>1.8 mm</td>
+                    <td class="deep">Deep</td>
+                </tr>
+                <tr>
+                    <td>C3</td>
+                    <td>1.4 mm</td>
+                    <td class="moderate">Moderate</td>
+                </tr>
+                <tr>
+                    <td>C4</td>
+                    <td>1.2 mm</td>
+                    <td class="moderate">Moderate</td>
+                </tr>
+            </table>
         </div>
-        <table class="measurement-table">
-            <tr>
-                <th>Measurement</th>
-                <th>C2</th>
-                <th>C3</th>
-                <th>C4</th>
-            </tr>
-            <tr>
-                <td>Anterior Height (AH)</td>
-                <td>7.7</td>
-                <td>8.2</td>
-                <td>8.5</td>
-            </tr>
-            <tr>
-                <td>Posterior Height (PH)</td>
-                <td>6.6</td>
-                <td>7.8</td>
-                <td>7.9</td>
-            </tr>
-            <tr>
-                <td>Middle Height (MH)</td>
-                <td>7.0</td>
-                <td>8.0</td>
-                <td>8.2</td>
-            </tr>
-            <tr>
-                <td>Width (W)</td>
-                <td>12.3</td>
-                <td>10.1</td>
-                <td>10.3</td>
-            </tr>
-        </table>
-    </div>
-    """, unsafe_allow_html=True)
+        """, unsafe_allow_html=True)
+
+    # ============================================================
+    # 3 & 4. VERTEBRAL SHAPE + MORPHOLOGICAL MEASUREMENTS
+    # ============================================================
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.markdown("""
+        <div class="section-card-equal">
+            <div class="section-title">3. Vertebral Shape Classification</div>
+            <div style="text-align:center;font-size:14px;font-weight:600;color:#64748B;margin-bottom:10px;">Predicted Shape</div>
+            <div style="display:flex;justify-content:center;gap:8px;">
+                <div style="text-align:center;flex:1;">
+                    <div style="height:90px;display:flex;align-items:center;justify-content:center;">
+                        <svg width="80" height="70" viewBox="0 0 120 100">
+                            <polygon points="20,25 100,25 95,75 25,75" fill="none" stroke="#246BCE" stroke-width="4"/>
+                        </svg>
+                    </div>
+                    <div style="font-size:14px;font-weight:700;color:#334155;">C2</div>
+                    <div style="font-size:12px;color:#64748B;margin-top:4px;">Rectangular<br>Horizontal</div>
+                </div>
+                <div style="text-align:center;flex:1;">
+                    <div style="height:90px;display:flex;align-items:center;justify-content:center;">
+                        <svg width="80" height="70" viewBox="0 0 120 100">
+                            <rect x="30" y="20" width="60" height="60" fill="none" stroke="#246BCE" stroke-width="4"/>
+                        </svg>
+                    </div>
+                    <div style="font-size:14px;font-weight:700;color:#334155;">C3</div>
+                    <div style="font-size:12px;color:#64748B;margin-top:4px;">Square</div>
+                </div>
+                <div style="text-align:center;flex:1;">
+                    <div style="height:90px;display:flex;align-items:center;justify-content:center;">
+                        <svg width="80" height="70" viewBox="0 0 120 100">
+                            <polygon points="35,20 85,20 100,80 20,80" fill="none" stroke="#246BCE" stroke-width="4"/>
+                        </svg>
+                    </div>
+                    <div style="font-size:14px;font-weight:700;color:#334155;">C4</div>
+                    <div style="font-size:12px;color:#64748B;margin-top:4px;">Trapezoidal</div>
+                </div>
+            </div>
+            <table class="measurement-table" style="margin-top:18px;">
+                <tr><th>Vertebra</th><th>Shape</th></tr>
+                <tr><td>C2</td><td><b>Rectangular Horizontal</b></td></tr>
+                <tr><td>C3</td><td><b>Square</b></td></tr>
+                <tr><td>C4</td><td><b>Trapezoidal</b></td></tr>
+            </table>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with col2:
+        st.markdown("""
+        <div class="section-card-equal">
+            <div class="section-title">4. Morphological Measurements (mm)</div>
+            <table class="measurement-table">
+                <tr><th>Measurement</th><th>C2</th><th>C3</th><th>C4</th></tr>
+                <tr><td>Anterior Height (AH)</td><td>7.7</td><td>8.2</td><td>8.5</td></tr>
+                <tr><td>Posterior Height (PH)</td><td>6.6</td><td>7.8</td><td>7.9</td></tr>
+                <tr><td>Middle Height (MH)</td><td>7.0</td><td>8.0</td><td>8.2</td></tr>
+                <tr><td>Width (W)</td><td>12.3</td><td>10.1</td><td>10.3</td></tr>
+            </table>
+        </div>
+        """, unsafe_allow_html=True)
 
 
     # ============================================================
@@ -426,7 +443,7 @@ def show_results(patient, uploaded_xray):
 
     with col1:
 
-        st.markdown("""
+        st.markdown(f"""
         <div class="section-card">
             <div class="section-title">
                 5. Predicted CVM Stage
@@ -436,14 +453,14 @@ def show_results(patient, uploaded_xray):
                     Predicted Stage
                 </div>
                 <div class="stage-value">
-                    CS4
-                </div>
-                <div class="stage-description">
-                    Peak Growth Passed Recently
-                </div>
-                <div class="confidence">
-                    Confidence: <b>92.4%</b>
-                </div>
+                {stage}
+            </div>
+            <div class="stage-description">
+                {current_stage["description"]}
+            </div>
+            <div class="confidence">
+                Confidence: <b>{current_stage["confidence"]}</b>
+            </div>
             </div>
         </div>
         """, unsafe_allow_html=True)
@@ -451,17 +468,15 @@ def show_results(patient, uploaded_xray):
 
     with col2:
 
-        st.markdown("""
+        st.markdown(f"""
         <div class="section-card">
             <div class="section-title">
                 6. Growth Phase Interpretation
             </div>
             <div class="interpretation-card">
-                <b>CS4 — Peak Growth Passed Recently</b>
+                <b>{stage} — {current_stage["description"]}</b>
                 <br><br>
-                The morphological characteristics of C2, C3,
-                and C4 indicate that the peak mandibular growth
-                period has recently passed.
+                {current_stage["interpretation"]}
             </div>
         </div>
         """, unsafe_allow_html=True)
@@ -508,32 +523,30 @@ def show_results(patient, uploaded_xray):
         </div>
         """, unsafe_allow_html=True)
 
-
     # ============================================================
     # 7. AUTOMATED CLINICAL REPORT SUMMARY
     # ============================================================
 
-    st.markdown("""
+    st.markdown(f"""
     <div class="section-card">
         <div class="section-title">
             7. Automated Clinical Report Summary
         </div>
         <div class="summary-box">
-            <b>Predicted CVM Stage:</b> CS4
+            <b>Predicted CVM Stage:</b> {stage}
             <br>
-            <b>Growth Phase:</b> Peak growth passed recently
+            <b>Growth Phase:</b> {current_stage["description"]}
             <br>
             <b>Concavity (C2/C3/C4):</b>
-            Deep / Moderate / Moderate
+            {current_stage["concavity"]}
             <br>
             <b>Shape (C2/C3/C4):</b>
-            Trapezoid / Square / Rectangular Horizontal
+            {current_stage["shape"]}
             <br>
-            <b>Confidence:</b> 92.4%
+            <b>Confidence:</b> {current_stage["confidence"]}
             <br>
             <b>Clinical Interpretation:</b>
-            The observed cervical vertebral morphological
-            characteristics are consistent with CVM Stage CS4.
+            {current_stage["interpretation"]}
         </div>
     </div>
     """, unsafe_allow_html=True)

@@ -11,7 +11,8 @@ def show_dashboard():
     An AI-assisted cervical vertebral maturation assessment system.
     """)
 
-    st.divider()
+    # divider
+    st.markdown("""<div style="border-top: 1px solid #c7ccd6;"></div>""", unsafe_allow_html=True)
 
     # ----------------------------------------------
     # Statistic cards
@@ -47,52 +48,47 @@ def show_dashboard():
             delta="15 this month"
         )
 
-    st.divider()
-
     # ----------------------------------------------
     # Recent predictions
     # ----------------------------------------------
-
-    st.subheader("Recent Predictions")
 
     recent_predictions = {
         "Patient": [
             "Patient 001",
             "Patient 002",
-            "Patient 003",
-            "Patient 004",
-            "Patient 005"
+            "Patient 003"
         ],
         "CVM Stage": [
             "CS2",
             "CS3",
-            "CS4",
-            "CS2",
-            "CS5"
+            "CS4"
         ],
         "Growth Phase": [
             "Pre-Growth",
             "Peak Growth",
-            "Post-Growth",
-            "Pre-Growth",
             "Post-Growth"
         ],
         "Date": [
             "14 Sep 2026",
             "13 Sep 2026",
-            "13 Sep 2026",
-            "12 Sep 2026",
-            "11 Sep 2026"
+            "13 Sep 2026"
         ]
     }
+
+    st.markdown(
+        '<div style="font-size:17px;font-weight:600;color:#1F2937;margin-bottom:4px;">Recent Predictions</div>',
+        unsafe_allow_html=True
+    )
 
     st.dataframe(
         recent_predictions,
         use_container_width=True,
-        hide_index=True
+        hide_index=True,
+        height=170
     )
 
-    st.divider()
+    # divider
+    st.markdown("""<div style="border-top: 1px solid #c7ccd6;"></div>""", unsafe_allow_html=True)
 
     # ----------------------------------------------
     # Charts

@@ -1,18 +1,12 @@
 import streamlit as st
-
+from src.patient_data import load_patients
 from src.ai_analysis import show_ai_analysis
 
 def show_assessment():
     st.title("CVM Assessment")
     st.write("Select a patient to view details or perform an AI-assisted analysis.")
 
-    patients = [
-        ["P001", "John Smith", 14, "Male", "2026-05-01"],
-        ["P002", "Emma Johnson", 13, "Female", "2026-04-28"],
-        ["P003", "Michael Brown", 15, "Male", "2026-05-03"],
-        ["P004", "Sophia Davis", 12, "Female", "2026-04-25"],
-        ["P005", "William Wilson", 16, "Male", "2026-05-05"],
-    ]
+    patients = load_patients()
 
     # --------------------------------------------------
     # Patient List Card
@@ -50,33 +44,39 @@ def show_assessment():
         )
 
         # Patient rows
-        for i, patient in enumerate(patients):
+        for i, patient in patients.iterrows():
 
             col1, col2, col3, col4, col5 = st.columns(
                 [2.5, 0.7, 1, 1.3, 2.4]
             )
 
-            col1.write(f"**{patient[1]}**  \n{patient[0]}")
-            col2.write(patient[2])
-            col3.write(patient[3])
-            col4.write(patient[4])
+            col1.write(
+                f"**{patient['name']}**  \n{patient['patient_id']}"
+            )
+            col2.write(patient['age'])
+            col3.write(patient['gender'])
+            col4.write(patient['last_visit'])
 
             with col5:
                 btn1, btn2 = st.columns(2)
 
                 with btn1:
-                    with st.container(key=f"view-details-{patient[0]}"):
+                    with st.container(
+                        key=f"view-details-{patient['patient_id']}"
+                    ):
                         st.button(
                             "View Details",
-                            key=f"view_{patient[0]}",
+                            key=f"view_{patient['patient_id']}",
                             use_container_width=True
                         )
 
                 with btn2:
-                    with st.container(key=f"ai-analysis-{patient[0]}"):
+                    with st.container(
+                        key=f"ai-analysis-{patient['patient_id']}"
+                    ):
                         if st.button(
                             "AI Analysis",
-                            key=f"ai_{patient[0]}",
+                            key=f"ai_{patient['patient_id']}",
                             use_container_width=True
                         ):
                             show_ai_analysis(patient)

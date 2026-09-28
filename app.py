@@ -20,11 +20,6 @@ st.markdown("""
         background: transparent !important;
     }
 
-    /* Hide the three-dot menu */
-    #MainMenu {
-        display: none !important;
-    }
-
     /* Hide footer */
     footer {
         display: none !important;

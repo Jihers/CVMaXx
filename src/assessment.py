@@ -64,11 +64,12 @@ def show_assessment():
                     with st.container(
                         key=f"view-details-{patient['patient_id']}"
                     ):
-                        st.button(
+                        if st.button(
                             "View Details",
                             key=f"view_{patient['patient_id']}",
                             use_container_width=True
-                        )
+                        ):
+                            show_patient_details(patient)
 
                 with btn2:
                     with st.container(
@@ -86,3 +87,107 @@ def show_assessment():
                     "<hr style='margin: 5px 0; border: none; border-top: 1px solid #E5E7EB;'>",
                     unsafe_allow_html=True
                 )
+
+
+@st.dialog("Patient Details")
+def show_patient_details(patient):
+
+    # --------------------------------------------------
+    # Patient Header
+    # --------------------------------------------------
+
+    st.markdown(
+        f"""
+        <div style="
+            background-color: #F8FAFC;
+            padding: 18px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        ">
+            <div style="
+                font-size: 22px;
+                font-weight: 700;
+                color: #173A72;
+            ">
+                {patient['name']}
+            </div>
+            <div style="
+                font-size: 14px;
+                color: #64748B;
+                margin-top: 4px;
+            ">
+                Patient ID: {patient['patient_id']}
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+    # --------------------------------------------------
+    # Personal Information
+    # --------------------------------------------------
+
+    st.markdown(
+        "<div style='font-size:17px; font-weight:600; "
+        "color:#173A72; margin-bottom:12px;'>"
+        "Personal Information</div>",
+        unsafe_allow_html=True
+    )
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.markdown(f"**IC Number**  \n{patient['ic_number']}")
+        st.markdown(f"**Date of Birth**  \n{patient['date_of_birth']}")
+        st.markdown(f"**Age**  \n{patient['age']} years old")
+
+    with col2:
+        st.markdown(f"**Gender**  \n{patient['gender']}")
+        st.markdown(f"**Phone Number**  \n{patient['phone']}")
+
+    st.markdown(
+        f"**Address**  \n{patient['address']}"
+    )
+
+    st.markdown("---")
+
+    # --------------------------------------------------
+    # Clinical Visit Information
+    # --------------------------------------------------
+
+    st.markdown(
+        "<div style='font-size:17px; font-weight:600; "
+        "color:#173A72; margin-bottom:12px;'>"
+        "Clinical Visit Information</div>",
+        unsafe_allow_html=True
+    )
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.markdown(f"**Last Visit**  \n{patient['last_visit']}")
+        st.markdown(f"**Visit Reason**  \n{patient['visit_reason']}")
+        st.markdown(f"**Referring Doctor**  \n{patient['referring_doctor']}")
+
+    with col2:
+        st.markdown(f"**Clinic**  \n{patient['clinic']}")
+        st.markdown(f"**Previous CVM Stage**  \n{patient['previous_cvm_stage']}")
+
+    st.markdown("---")
+
+    # --------------------------------------------------
+    # Clinical History
+    # --------------------------------------------------
+
+    st.markdown(
+        "<div style='font-size:17px; font-weight:600; "
+        "color:#173A72; margin-bottom:12px;'>"
+        "Clinical History</div>",
+        unsafe_allow_html=True
+    )
+
+    st.markdown("**Medical History**")
+    st.info(patient["medical_history"])
+
+    st.markdown("**Dental History**")
+    st.info(patient["dental_history"])

@@ -288,7 +288,7 @@ def show_results(patient, uploaded_xray):
     # HEADER
     # ============================================================
 
-    exit_col = st.columns([27, 1])[1]
+    exit_col = st.columns([20, 1])[1]
 
     with exit_col:
         if st.button("Exit", key="close_results"):

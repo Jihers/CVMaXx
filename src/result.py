@@ -549,13 +549,3 @@ def show_results(patient, uploaded_xray):
         </div>
     </div>
     """, unsafe_allow_html=True)
-
-
-    # ============================================================
-    # DISCLAIMER
-    # ============================================================
-
-    st.caption(
-        "This system is designed to support clinical decision making "
-        "and does not replace professional judgment."
-    )

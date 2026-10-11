@@ -1,7 +1,7 @@
 from ultralytics import YOLO
 from PIL import Image
 
-MODEL_PATH = r"C:\Users\USER\OneDrive\Documents\CDCS230\Sem 5\CVMaXx\outputs\classify\train3\weights\best.pt"
+MODEL_PATH = "outputs/classify/train3/weights/best.pt"
 
 model = YOLO(MODEL_PATH)
 

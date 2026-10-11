@@ -3,13 +3,13 @@ from datetime import datetime
 
 def show_results(patient, uploaded_xray):
 
-    # Prototype stage data
-    stage = patient["stage"]
+    ai_result = st.session_state.get("ai_result", {})
+    stage = ai_result.get("stage", patient["stage"])
+    confidence = ai_result.get("confidence")
 
     stage_data = {
         "CS2": {
             "description": "Acceleration of Growth Begins",
-            "confidence": "91.8%",
             "interpretation": (
                 "The morphological characteristics of C2, C3, "
                 "and C4 indicate that mandibular growth acceleration "
@@ -21,7 +21,6 @@ def show_results(patient, uploaded_xray):
 
         "CS4": {
             "description": "Peak Growth Passed Recently",
-            "confidence": "92.4%",
             "interpretation": (
                 "The morphological characteristics of C2, C3, "
                 "and C4 indicate that the peak mandibular growth "
@@ -33,7 +32,6 @@ def show_results(patient, uploaded_xray):
 
         "CS6": {
             "description": "Growth Completed",
-            "confidence": "94.1%",
             "interpretation": (
                 "The morphological characteristics of C2, C3, "
                 "and C4 indicate that mandibular growth has "
@@ -45,6 +43,7 @@ def show_results(patient, uploaded_xray):
     }
 
     current_stage = stage_data.get(stage, stage_data["CS4"])
+    display_confidence = f"{confidence:.1f}%" if confidence is not None else current_stage["confidence"]
 
     # ============================================================
     # PAGE STYLING
@@ -459,7 +458,7 @@ def show_results(patient, uploaded_xray):
                 {current_stage["description"]}
             </div>
             <div class="confidence">
-                Confidence: <b>{current_stage["confidence"]}</b>
+                Confidence: <b>{display_confidence}</b>
             </div>
             </div>
         </div>
@@ -543,7 +542,7 @@ def show_results(patient, uploaded_xray):
             <b>Shape (C2/C3/C4):</b>
             {current_stage["shape"]}
             <br>
-            <b>Confidence:</b> {current_stage["confidence"]}
+            <b>Confidence:</b> {display_confidence}
             <br>
             <b>Clinical Interpretation:</b>
             {current_stage["interpretation"]}

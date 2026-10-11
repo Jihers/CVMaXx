@@ -1,5 +1,5 @@
 import streamlit as st
-
+from models.ai_model import analyze_xray
 
 @st.dialog("Upload X-Ray Image", width="small")
 def show_ai_analysis(patient):
@@ -117,13 +117,22 @@ def show_ai_analysis(patient):
     if cancel:
         st.rerun()
 
+    
     if start:
         if uploaded_file is None:
             st.warning("Please upload an X-ray image first.")
         else:
-            st.session_state["selected_patient"] = patient
-            st.session_state["uploaded_xray"] = uploaded_file
-            st.session_state["show_results"] = True
-            st.session_state["page"] = "CVM Assessment"
+            try:
+                with st.spinner("AI is analyzing the X-ray..."):
+                    result = analyze_xray(uploaded_file)
 
-            st.rerun()
+                st.session_state["selected_patient"] = patient
+                st.session_state["uploaded_xray"] = uploaded_file
+                st.session_state["ai_result"] = result
+                st.session_state["show_results"] = True
+                st.session_state["page"] = "CVM Assessment"
+
+                st.rerun()
+
+            except Exception as e:
+                st.error(f"AI analysis failed: {e}")

@@ -1,6 +1,5 @@
 import streamlit as st
 from datetime import datetime
-import cv2
 
 def show_results(patient, uploaded_xray):
 

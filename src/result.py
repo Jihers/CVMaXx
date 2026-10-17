@@ -1,5 +1,6 @@
 import streamlit as st
 from datetime import datetime
+import cv2
 
 def show_results(patient, uploaded_xray):
 
@@ -332,9 +333,56 @@ def show_results(patient, uploaded_xray):
             <div class="xray-container">
         """, unsafe_allow_html=True)
 
-        xray_col = st.columns([1, 2, 1])[1]
+        
+        xray_col = st.columns([1, 2, 1])[1] # display annotated image in the center
         with xray_col:
-            st.image(uploaded_xray, width=300)
+            ai_result = st.session_state.get("ai_result", {})
+            detection_results = ai_result.get("detection_results")
+
+            if detection_results:
+                result = detection_results[0]
+                annotated_image = result.orig_img.copy()
+
+                if result.boxes is not None:
+                    for box in result.boxes:
+                        x1, y1, x2, y2 = map(int, box.xyxy[0].tolist())
+                        class_id = int(box.cls[0])
+                        label = result.names[class_id]
+
+                        # Draw bounding box only
+                        cv2.rectangle(
+                            annotated_image,
+                            (x1, y1),
+                            (x2, y2),
+                            (0, 255, 0),
+                            2
+                        )
+
+                        # Place label beside the bounding box
+                        font = cv2.FONT_HERSHEY_SIMPLEX
+                        font_scale = 0.7
+                        thickness = 2
+                        text_size = cv2.getTextSize(
+                            label, font, font_scale, thickness
+                        )[0]
+
+                        text_x = min(x2 + 5, annotated_image.shape[1] - text_size[0] - 5)
+                        text_y = max(y1 + text_size[1], 5)
+
+                        cv2.putText(
+                            annotated_image,
+                            label,
+                            (text_x, text_y),
+                            font,
+                            font_scale,
+                            (0, 255, 0),
+                            thickness
+                        )
+
+                st.image(annotated_image, channels="BGR", width=300)
+            else:
+                st.image(uploaded_xray, width=300)
+
 
         st.markdown("""
             </div>

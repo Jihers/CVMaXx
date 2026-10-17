@@ -6,7 +6,7 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Patient data file
-PATIENT_FILE = BASE_DIR / "dataset" / "patients.csv"
+PATIENT_FILE = BASE_DIR / "patients.csv"
 
 
 def load_patients():

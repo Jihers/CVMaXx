@@ -332,18 +332,9 @@ def show_results(patient, uploaded_xray):
             <div class="xray-container">
         """, unsafe_allow_html=True)
 
-        
-        xray_col = st.columns([1, 2, 1])[1] # display annotated image in the center
+        xray_col = st.columns([1, 2, 1])[1]
         with xray_col:
-            ai_result = st.session_state.get("ai_result", {})
-            detection_results = ai_result.get("detection_results")
-
-            if detection_results:
-                annotated_image = detection_results[0].plot()
-                st.image(annotated_image, channels="BGR", width=300)
-            else:
-                st.image(uploaded_xray, width=300)
-
+            st.image(uploaded_xray, width=300)
 
         st.markdown("""
             </div>

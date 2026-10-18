@@ -305,7 +305,7 @@ def show_results(patient, uploaded_xray):
             <div class="result-header-info">
                 <div>
                     <div class="header-label">Patient ID</div>
-                    <div class="header-value">{patient[0]}</div>
+                    <div class="header-value">{patient.iloc[0]}</div>
                 </div>
                 <div>
                     <div class="header-label">Date</div>

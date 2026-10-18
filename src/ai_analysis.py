@@ -55,9 +55,9 @@ def show_ai_analysis(patient):
     st.markdown(
         f"""
         <div class="patient-card">
-            <div class="patient-name">🧑🏻‍⚕️ &nbsp; {patient[1]}</div>
+            <div class="patient-name">🧑🏻‍⚕️ &nbsp; {patient.iloc[1]}</div>
             <div class="patient-info">
-                {patient[0]} &nbsp;·&nbsp; {patient[2]}y &nbsp; {patient[3]}
+                {patient.iloc[0]} &nbsp;·&nbsp; {patient.iloc[2]}y &nbsp; {patient.iloc[3]}
             </div>
         </div>
         """,

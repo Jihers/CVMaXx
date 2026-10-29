@@ -1,0 +1,7 @@
+23/10/2026 4.34am
+Dr Aina punya models (ai_model_old) is more accurate than yang baru. tapi bila tengok confusion matrix, rasa macam lightbgm punya lagi elok
+cumanya taktau dr aina pakai code mana sebab confusion dia by stages while yang develop baru guna 2-6
+
+next to-do:
+cari code yang dr aina pakai supaya boleh compare confusion matrix
+labels untuk train takde S1 sebabtu ai ingat ada 5 stages je. so kena betulkan balik

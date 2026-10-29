@@ -1,5 +1,5 @@
 import streamlit as st
-from models.ai_model import analyze_xray
+from models.ai_model_old import analyze_xray
 
 @st.dialog("Upload X-Ray Image", width="small")
 def show_ai_analysis(patient):

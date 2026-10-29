@@ -350,32 +350,56 @@ def show_results(patient, uploaded_xray):
         </div>
         """, unsafe_allow_html=True)
 
+    
+    
     with col2:
+        ai_result = st.session_state.get("ai_result", {})
+        concavity_results = ai_result.get("concavity_results", [])
+        vertebra_order = ["CV2", "CV3", "CV4"]
+        concavity_by_vertebra = {
+            item["vertebra"]: item
+            for item in concavity_results
+            if item.get("vertebra") in vertebra_order
+        }
+
         st.markdown("""
         <div class="section-card-equal">
-            <div class="section-title">2. Concavity Analysis (C2–C4)</div>
-            <table class="concavity-table">
+            <div class="section-title">2. Concavity Analysis (CV2–CV4)</div>
+        """, unsafe_allow_html=True)
+
+        rows = ""
+
+        for vertebra in vertebra_order:
+            item = concavity_by_vertebra.get(vertebra)
+
+            if item and item.get("depth_px") is not None:
+                depth_text = f'{item["depth_px"]:.2f} px'
+                classification = item.get(
+                    "classification",
+                    "Unable to Analyse"
+                )
+            else:
+                depth_text = "Unavailable"
+                classification = "Unable to Analyse"
+
+            rows += f"<tr><td>{vertebra}</td><td>{depth_text}</td><td>{classification}</td></tr>"
+
+        st.markdown(f"""
+        <table class="concavity-table">
+            <thead>
                 <tr>
                     <th>Vertebra</th>
-                    <th>Concavity Depth</th>
-                    <th>Concavity Classification</th>
+                    <th>Depth (px)</th>
+                    <th>Classification</th>
                 </tr>
-                <tr>
-                    <td>C2</td>
-                    <td>1.8 mm</td>
-                    <td class="deep">Deep</td>
-                </tr>
-                <tr>
-                    <td>C3</td>
-                    <td>1.4 mm</td>
-                    <td class="moderate">Moderate</td>
-                </tr>
-                <tr>
-                    <td>C4</td>
-                    <td>1.2 mm</td>
-                    <td class="moderate">Moderate</td>
-                </tr>
-            </table>
+            </thead>
+            <tbody>
+                {rows}
+            </tbody>
+        </table>
+        <p style="font-size:12px;color:#64748B;margin-top:10px;">
+            Depth is an experimental estimate in pixels and is not calibrated to millimetres.
+        </p>
         </div>
         """, unsafe_allow_html=True)
 

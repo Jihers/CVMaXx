@@ -129,8 +129,9 @@ def show_ai_analysis(patient):
                 st.session_state["selected_patient"] = patient
                 st.session_state["uploaded_xray"] = uploaded_file
                 st.session_state["ai_result"] = result
-                st.session_state["show_results"] = True
-                st.session_state["page"] = "CVM Assessment"
+
+                st.session_state["page"] = "Manual Concavity Analysis"
+                st.session_state["show_results"] = False
 
                 st.rerun()
 

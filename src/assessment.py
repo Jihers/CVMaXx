@@ -1,8 +1,16 @@
 import streamlit as st
 from src.patient_data import load_patients
 from src.ai_analysis import show_ai_analysis
+from models.concavity_analysis import show_manual_analysis
 
 def show_assessment():
+
+    if st.session_state.get("page") == "Manual Concavity Analysis":
+        show_manual_analysis(
+            st.session_state["uploaded_xray"]
+        )
+        return
+
     st.title("CVM Assessment")
     st.write("Select a patient to view details or perform an AI-assisted analysis.")
 

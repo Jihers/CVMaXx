@@ -353,13 +353,16 @@ def show_results(patient, uploaded_xray):
     
     
     with col2:
-        ai_result = st.session_state.get("ai_result", {})
-        concavity_results = ai_result.get("concavity_results", [])
+        concavity_results = st.session_state.get("manual_concavity_results", [])
+
+        concavity_image = st.session_state.get("manual_concavity_image")
+
         vertebra_order = ["CV2", "CV3", "CV4"]
+
         concavity_by_vertebra = {
             item["vertebra"]: item
             for item in concavity_results
-            if item.get("vertebra") in vertebra_order
+            if item["vertebra"] in vertebra_order
         }
 
         st.markdown("""
@@ -367,29 +370,41 @@ def show_results(patient, uploaded_xray):
             <div class="section-title">2. Concavity Analysis (CV2–CV4)</div>
         """, unsafe_allow_html=True)
 
+        # Annotated concavity image
+        if concavity_image is not None:
+            image_col = st.columns([1, 2, 1])[1]
+
+            with image_col:
+                st.image(
+                    concavity_image,
+                    channels="BGR",
+                    width=450
+                )
+
         rows = ""
 
         for vertebra in vertebra_order:
             item = concavity_by_vertebra.get(vertebra)
 
-            if item and item.get("depth_px") is not None:
-                depth_text = f'{item["depth_px"]:.2f} px'
-                classification = item.get(
-                    "classification",
-                    "Unable to Analyse"
-                )
+            if item and item["depth_mm"] is not None:
+                depth_text = f"{item['depth_mm']:.2f}"
+                classification = item['classification']
             else:
                 depth_text = "Unavailable"
                 classification = "Unable to Analyse"
 
-            rows += f"<tr><td>{vertebra}</td><td>{depth_text}</td><td>{classification}</td></tr>"
+            rows += (
+                f"<tr><td>{vertebra}</td>"
+                f"<td>{depth_text}</td>"
+                f"<td>{classification}</td></tr>"
+            )
 
         st.markdown(f"""
         <table class="concavity-table">
             <thead>
                 <tr>
                     <th>Vertebra</th>
-                    <th>Depth (px)</th>
+                    <th>Depth (mm)</th>
                     <th>Classification</th>
                 </tr>
             </thead>
@@ -398,7 +413,8 @@ def show_results(patient, uploaded_xray):
             </tbody>
         </table>
         <p style="font-size:12px;color:#64748B;margin-top:10px;">
-            Depth is an experimental estimate in pixels and is not calibrated to millimetres.
+            Depth is estimated using manually selected landmarks.
+            Measurements are based on the current image scale.
         </p>
         </div>
         """, unsafe_allow_html=True)

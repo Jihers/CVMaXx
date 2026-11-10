@@ -5,3 +5,5 @@ cumanya taktau dr aina pakai code mana sebab confusion dia by stages while yang 
 next to-do:
 cari code yang dr aina pakai supaya boleh compare confusion matrix
 labels untuk train takde S1 sebabtu ai ingat ada 5 stages je. so kena betulkan balik
+morphological analysis boleh ikut this research https://pmc.ncbi.nlm.nih.gov/articles/PMC7333473
+letak accuracy kat dashboard

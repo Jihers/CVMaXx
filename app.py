@@ -6,6 +6,7 @@ from src.assessment import show_assessment
 from src.history import show_history
 from src.setting import show_setting
 from src.result import show_results
+from models.concavity_analysis import show_manual_analysis
 
 
 # --------------------------------------------------
@@ -309,11 +310,38 @@ if st.session_state.get("show_results", False): #Show sidebar if not in results 
     </style>
     """, unsafe_allow_html=True)
 
+if page == "Manual Concavity Analysis":
+    st.markdown("""
+        <style>
+            [data-testid="stSidebar"] {
+                display: none;
+            }
+
+            [data-testid="stSidebarCollapsedControl"] {
+                display: none;
+            }
+
+            .block-container {
+                max-width: 100%;
+                padding-top: 2rem;
+                padding-left: 3rem;
+                padding-right: 3rem;
+            }
+        </style>
+    """, unsafe_allow_html=True)
+
 if st.session_state.get("show_results", False):
 
     # Full-page Results view
     show_results(
         st.session_state["selected_patient"],
+        st.session_state["uploaded_xray"]
+    )
+
+elif page == "Manual Concavity Analysis":
+
+    # Manual Landmark Selection
+    show_manual_analysis(
         st.session_state["uploaded_xray"]
     )
 
